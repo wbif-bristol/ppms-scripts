@@ -33,7 +33,7 @@ const requestListener = function (req, res) {
             var booking_map = new Map();
             
             if (sessions == undefined) {
-                booking_map.set(0,"<p>No bookings today</p>");
+                booking_map.set(0,"");
             } else {
                 for (var session_idx in sessions) {
                     var booking = sessions[session_idx];
@@ -69,10 +69,11 @@ function getDateString() {
     str = str + String(date.getMonth()+1).padStart(2, '0');
     str = str + "-";
     str = str + String(date.getDate()).padStart(2, '0');
-    console.log(str);
+    
     return str;
 
 }
+
 function generateBody(details, extra_name, extra_value) {
     var formBody = [];
     for (var property in details) {
@@ -112,7 +113,7 @@ async function getSessions(system_id) {
 
 function updatePageTitle(html, sessions) {
     if (sessions == undefined) {
-        return html.replace("Booking information for {SYSTEM}", "No bookings found for today");
+        return html.replace("Today's bookings for {SYSTEM}", "No bookings found for today");
     } else {
         return html.replace("{SYSTEM}", sessions[0].systemName);
     }
