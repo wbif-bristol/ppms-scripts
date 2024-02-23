@@ -10,15 +10,10 @@ const api_key = process.argv[2]
 
 var get_sessions_list_items = {
     'action': 'GetSessionsList',
-    'date': getDateString(),
+    'date': '0000-00-00',
     'filter': 'day',
     'coreid': core_id,
-    'apikey': api_key
-};
-
-var get_sessions_details_items = {
-    'action': 'GetSessionDetails',
-    'coreid': core_id,
+    'systemid': 0,
     'apikey': api_key
 };
 
@@ -27,6 +22,7 @@ const requestListener = function (req, res) {
     res.writeHead(200);
 
     system_id = req.url.substring(1);
+    get_sessions_list_items['date'] = getDateString();
 
     sessions = getSessions(system_id)
         .then((sessions) => {
@@ -51,6 +47,9 @@ const requestListener = function (req, res) {
                 }
             }
 
+            if (booking_map.size == 0)
+                booking_map.set(0,"");
+
             var html = indexFile;
             html = updatePageTitle(html, sessions);
             html = updateBookings(html, booking_map);
@@ -74,28 +73,22 @@ function getDateString() {
 
 }
 
-function generateBody(details, extra_name, extra_value) {
+async function getSessions(system_id) {
+    get_sessions_list_items['systemid'] = system_id;
+
     var formBody = [];
-    for (var property in details) {
+    for (var property in get_sessions_list_items) {
         var encodedKey = encodeURIComponent(property);
-        var encodedValue = encodeURIComponent(details[property]);
+        var encodedValue = encodeURIComponent(get_sessions_list_items[property]);
         formBody.push(encodedKey + "=" + encodedValue);
     }
-    var encodedKey = encodeURIComponent(extra_name);
-    var encodedValue = encodeURIComponent(extra_value);
-    formBody.push(encodedKey + "=" + encodedValue);
 
-    return formBody.join("&");
-
-}
-
-async function getSessions(system_id) {
-    formBody = generateBody(get_sessions_list_items, 'systemid', system_id);
+    body = formBody.join('&')
 
     let sessions = await fetch(ppms_url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-        body: formBody
+        body: body
     })
         .then((response) => {
             return response.json()
