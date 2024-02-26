@@ -33,11 +33,12 @@ const requestListener = function (req, res) {
             } else {
                 for (var session_idx in sessions) {
                     var booking = sessions[session_idx];
+                    
                     var cancelled = booking.cancelled;
                     if (cancelled)
                         continue;
 
-                    var start_time = new Date(0, 0, 0, booking.hour / 4);
+                    var start_time = new Date(0, 0, 0, booking.hour / 4, 15*(booking.hour % 4));
                     var start_time_ms = start_time.getTime();
                     var booked_time_ms = booking.hoursBooked * 60 * 60 * 1000;
                     var end_time = new Date(start_time_ms + booked_time_ms);
@@ -91,9 +92,12 @@ async function getSessions(system_id) {
         body: body
     })
         .then((response) => {
+            if (response.status != 200)
+                return undefined;
+
             return response.json()
         })
-        .then((data) => {
+        .then((data) => {            
             return data;
         })
         .catch(err => {
