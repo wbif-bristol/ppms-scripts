@@ -22,6 +22,10 @@ const requestListener = function (req, res) {
     res.writeHead(200);
 
     system_id = req.url.substring(1);
+    if (system_id === 'favicon.ico') {
+        return;
+    }
+    
     get_sessions_list_items['date'] = getDateString();
 
     sessions = getSessions(system_id)
