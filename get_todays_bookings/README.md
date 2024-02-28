@@ -1,4 +1,4 @@
-# Get today's sessions
+# Get today's bookings
 Creates a web server that shows the current day's bookings for a specific system.  
 
 ## Usage 
